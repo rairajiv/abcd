@@ -1,0 +1,18 @@
+#!/bin/bash
+
+HOSTIP="172.27.59.222"
+apt-get install -y  nagios-nrpe-server nagios-plugins-basic \
+nagios-plugins \
+nagios-plugins-extra
+cp /etc/nagios/nrpe.cfg /etc/nagios/nrpe.cfg.org
+
+file="/etc/nagios/nrpe.cfg"
+exists=$(grep -c $HOSTIP $file)
+if [[ $exists = "0" ]]; then
+   echo "allowed_hosts=$HOSTIP
+    command[check_all_disks]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -e"  >> $file
+fi
+
+service nagios-nrpe-server restart
+
+
